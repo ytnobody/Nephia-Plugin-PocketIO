@@ -8,24 +8,31 @@ use Furl;
 
 our $VERSION = "0.01";
 our $SOURCE_URL = 'https://raw.github.com/LearnBoost/socket.io-client/master/socket.io-client.js';
-our $CLIENT_PATH = 'static/socket.io-client.js';
+our $CLIENT_PATH = '/static/socket.io-client.js';
 
 sub pocketio ($&) {
     my ($path, $code) = @_;
     my $pio = PocketIO->new(handler => $code);
-    $Nephia::Core::MAPPER->connect($path, $pio);
+    $Nephia::Core::MAPPER->connect($path, {action => $pio});
 }
 
 sub pocketio_assets (;$) {
     my $path = shift;
-    $path ||= $CLIENT_PATH;
-    my $file = File::Spec->catfile($FindBin::Bin, 'root', $path);
+    my $file = File::Spec->catfile($FindBin::Bin, 'root', pocketio_client_path($path));
     my $furl = Furl->new(agent => __PACKAGE__.'/'.$VERSION);
     my $res = $furl->get($SOURCE_URL);
     die 'could not fetch assets' unless $res->is_success;
-    open my $fh, '>', $file or die "could not open file $file : $!";
-    print $fh $res->content;
-    close $fh;
+    unless (-e $file) {
+        open my $fh, '>', $file or die "could not open file $file : $!";
+        print $fh $res->content;
+        close $fh;
+    }
+}
+
+sub pocketio_client_path {
+    my $path = shift;
+    $path ||= $Nephia::Plugin::PocketIO::CLIENT_PATH;
+    return File::Spec->catfile($path);
 }
 
 

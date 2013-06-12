@@ -4,6 +4,20 @@
   <link rel="stylesheet" href="/static/style.css" />
   <link rel="shortcut icon" href="/static/favicon.ico" />
   <title><?= $c->{title} ?> - powerd by Nephia</title>
+  <script type="text/javascript" href="<?= $c->{client} ?>"></script>
+  <script type="text/javascript">
+var socket = io.connect('http://localhost/io');
+socket.on('connect', function(){
+    getElementById('mes').innerHTML('connected!');
+});
+socket.on('server_message', function(msg){
+    getElementById('mes').innerHTML(msg);
+});
+
+function iosend (mes) {
+    socket.emit('message', mes);
+}
+  </script>
 </head>
 <body>
   <div class="title">
@@ -12,7 +26,8 @@
   </div>
 
   <div class="content">
-    <h2>Hello, Nephia world!</h2>
+    <h2 id="#mes">Hello, Nephia world!</h2>
+    <button onclick="iosend('foo!')">press!</button>
     <p>Nephia is a mini web-application framework.</p>
     <pre>
     ### <?= $c->{apppath} ?>

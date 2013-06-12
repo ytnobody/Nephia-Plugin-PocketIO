@@ -15,17 +15,19 @@ path '/' => sub {
         template => 'index.html',
         title    => config->{appname},
         envname  => config->{envname},
+        client   => pocketio_client_path(),
         apppath  => 'lib/' . __PACKAGE__ .'.pm',
     };
 };
 
-path '/data' => sub {
-    my $req = shift;
-    return { # return JSON unless {template}
-        #template => 'index.tx',
-        title    => config->{appname},
-        envname  => config->{envname},
-    };
+use Data::Dumper;
+pocketio '/io' => sub {
+    my $c = shift;
+    $c->on('message' => sub {
+        warn Dumper(@_);
+        my ($socket, $mes) = @_;
+        $socket->emit('server_message', time. $mes);
+    });
 };
 
 1;
