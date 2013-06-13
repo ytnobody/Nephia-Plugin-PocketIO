@@ -5,20 +5,27 @@ use warnings;
 use PocketIO;
 use File::Spec;
 use Furl;
+use Plack::Builder;
 
 our $VERSION = "0.01";
-our $SOURCE_URL = 'https://raw.github.com/LearnBoost/socket.io-client/master/socket.io-client.js';
-our $CLIENT_PATH = '/static/socket.io-client.js';
+our $SOURCE_URL = 'https://raw.github.com/vti/pocketio/master/examples/chat/public/socket.io.js';
+our $CLIENT_PATH = '/static/socket.io.js';
+our %EVENTS = ();
+our $RUN;
 
-sub pocketio ($&) {
-    my ($path, $code) = @_;
-    my $pio = PocketIO->new(handler => $code);
-    $Nephia::Core::MAPPER->connect($path, {action => $pio});
+{
+    no strict 'refs';
+    $RUN = *{$Nephia::Core::run}{CODE};
 }
 
-sub pocketio_assets (;$) {
+sub pocketio ($&) {
+    my ($event, $code) = @_;
+    $EVENTS{$event} = $code;
+}
+
+sub load_pocketio_asset (;$) {
     my $path = shift;
-    my $file = File::Spec->catfile($FindBin::Bin, 'root', pocketio_client_path($path));
+    my $file = File::Spec->catfile($FindBin::Bin, 'root', pocketio_asset_path($path));
     my $furl = Furl->new(agent => __PACKAGE__.'/'.$VERSION);
     my $res = $furl->get($SOURCE_URL);
     die 'could not fetch assets' unless $res->is_success;
@@ -29,12 +36,26 @@ sub pocketio_assets (;$) {
     }
 }
 
-sub pocketio_client_path {
+sub pocketio_asset_path {
     my $path = shift;
     $path ||= $Nephia::Plugin::PocketIO::CLIENT_PATH;
     return File::Spec->catfile($path);
 }
 
+sub run {
+    my $app = $RUN->(@_);
+    return builder {
+        mount '/socket.io' => PocketIO->new(handler => sub {
+            my $self = shift;
+            for my $event (keys %EVENTS) {
+                my $action = $EVENTS{$event};
+                $self->on($event => $action);
+            }
+            $self->send({buffer => []});
+        });
+        $app;
+    };
+}
 
 1;
 __END__
@@ -51,13 +72,9 @@ Nephia::Plugin::PocketIO - It's new $module
     use Nephia plugins => ['PocketIO'];
     
     pocketio_assets;
-    pocketio '/io' => sub {
-        my $c = shift;
-        $c->on('message' => sub {
-            my ($socket, $message) = @_;
-            ...
-        });
-        $c->send({buffer => []});
+    pocketio 'message' => sub {
+        my ($socket, $message) = @_;
+        $socket->emit('response', sub {'response data'} );
     };
 
 =head1 DESCRIPTION

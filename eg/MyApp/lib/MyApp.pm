@@ -1,13 +1,11 @@
 package MyApp;
 use strict;
 use warnings;
-use File::Spec;
-use lib File::Spec->catfile($FindBin::Bin, qw/.. .. lib/);
 use Nephia plugins => ['PocketIO'];
 
 our $VERSION = 0.01;
 
-pocketio_assets;
+# load_pocketio_asset();
 
 path '/' => sub {
     my $req = shift;
@@ -15,19 +13,9 @@ path '/' => sub {
         template => 'index.html',
         title    => config->{appname},
         envname  => config->{envname},
-        client   => pocketio_client_path(),
         apppath  => 'lib/' . __PACKAGE__ .'.pm',
+        assets   => pocketio_asset_path(),
     };
-};
-
-use Data::Dumper;
-pocketio '/io' => sub {
-    my $c = shift;
-    $c->on('message' => sub {
-        warn Dumper(@_);
-        my ($socket, $mes) = @_;
-        $socket->emit('server_message', time. $mes);
-    });
 };
 
 1;
