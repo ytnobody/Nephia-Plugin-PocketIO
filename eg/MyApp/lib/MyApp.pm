@@ -5,17 +5,23 @@ use Nephia plugins => ['PocketIO'];
 
 our $VERSION = 0.01;
 
-# load_pocketio_asset();
+load_pocketio_asset();
 
 path '/' => sub {
     my $req = shift;
+    my $asset = pocketio_asset_path();
     return {
         template => 'index.html',
         title    => config->{appname},
         envname  => config->{envname},
         apppath  => 'lib/' . __PACKAGE__ .'.pm',
-        assets   => pocketio_asset_path(),
+        asset    => $asset,
     };
+};
+
+pocketio 'message' => sub {
+    my($socket, $mes) = @_;
+    $socket->emit('server_message', 'yahoo!!');
 };
 
 1;

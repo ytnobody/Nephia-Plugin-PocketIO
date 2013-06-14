@@ -15,7 +15,7 @@ our $RUN;
 
 {
     no strict 'refs';
-    $RUN = *{$Nephia::Core::run}{CODE};
+    $RUN = \&Nephia::Core::run;
 }
 
 sub pocketio ($&) {
@@ -53,7 +53,7 @@ sub run {
             }
             $self->send({buffer => []});
         });
-        $app;
+        mount '/' => $app;
     };
 }
 

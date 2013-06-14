@@ -4,18 +4,24 @@
   <link rel="stylesheet" href="/static/style.css" />
   <link rel="shortcut icon" href="/static/favicon.ico" />
   <title><?= $c->{title} ?> - powerd by Nephia</title>
-  <script type="text/javascript" src="<? $c->{asset} ?>"></script>
+  
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <script type="text/javascript" src="<?= $c->{asset} ?>"></script>
   <script type="text/javascript">
 var socket = io.connect();
 socket.on('connect', function(){
-    getElementById('mes').innerHTML('connected!');
+    $('#mes').text('connected!');
+    console.log('connected');
 });
 socket.on('server_message', function(msg){
-    getElementById('mes').innerHTML(msg);
+    $('#mes').text(msg);
+    console.log(msg);
 });
 
 function iosend (mes) {
+    console.log(mes);
     socket.emit('message', mes);
+    console.log('done');
 }
   </script>
 </head>
@@ -26,8 +32,8 @@ function iosend (mes) {
   </div>
 
   <div class="content">
-    <h2 id="#mes">Hello, Nephia world!</h2>
-    <button onclick="iosend('foo!')">press!</button>
+    <h2 id="mes">Hello, Nephia world!</h2>
+    <button onclick="iosend('foo!');">press!</button>
     <pre>
     ### <?= $c->{apppath} ?>
     use Nephia;
