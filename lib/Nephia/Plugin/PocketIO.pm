@@ -13,19 +13,15 @@ our $CLIENT_PATH = '/static/socket.io.js';
 our %EVENTS = ();
 our $RUN;
 
+use Data::Dumper::Concise;
+
 {
     no strict 'refs';
     $RUN = \&Nephia::Core::run;
 }
 
-sub pocketio ($&) {
-    my ($event, $code) = @_;
-    $EVENTS{$event} = $code;
-}
-
-sub load_pocketio_asset (;$) {
-    my $path = shift;
-    my $file = File::Spec->catfile($FindBin::Bin, 'root', pocketio_asset_path($path));
+sub import {
+    my $file = File::Spec->catfile($FindBin::Bin, 'root', pocketio_asset_path());
     my $furl = Furl->new(agent => __PACKAGE__.'/'.$VERSION);
     my $res = $furl->get($SOURCE_URL);
     die 'could not fetch assets' unless $res->is_success;
@@ -36,6 +32,11 @@ sub load_pocketio_asset (;$) {
     }
 }
 
+sub pocketio ($&) {
+    my ($event, $code) = @_;
+    $EVENTS{$event} = $code;
+}
+
 sub pocketio_asset_path {
     my $path = shift;
     $path ||= $Nephia::Plugin::PocketIO::CLIENT_PATH;
@@ -44,6 +45,20 @@ sub pocketio_asset_path {
 
 sub run {
     my $app = $RUN->(@_);
+
+    my $asset = pocketio_asset_path();
+    my $view_class = ref($Nephia::Core::VIEW);
+    {
+        no strict 'refs';
+        no warnings 'redefine';
+        my $render_orig = *{$view_class.'::render'}{CODE};
+        *{$view_class.'::render'} = sub {
+            my $html = $render_orig->(@_);
+            $html =~ s|(</body>)|$1\n<script type="text/javascript" src="$asset"></script>|i;
+            $html;
+        };
+    }
+
     return builder {
         mount '/socket.io' => PocketIO->new(handler => sub {
             my $self = shift;

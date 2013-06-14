@@ -5,8 +5,6 @@ use Nephia plugins => ['PocketIO'];
 
 our $VERSION = 0.01;
 
-load_pocketio_asset();
-
 path '/' => sub {
     my $req = shift;
     my $asset = pocketio_asset_path();
@@ -15,7 +13,6 @@ path '/' => sub {
         title    => config->{appname},
         envname  => config->{envname},
         apppath  => 'lib/' . __PACKAGE__ .'.pm',
-        asset    => $asset,
     };
 };
 
