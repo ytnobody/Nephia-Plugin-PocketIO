@@ -13,14 +13,16 @@ our $CLIENT_PATH = '/static/socket.io.js';
 our %EVENTS = ();
 our $RUN;
 
-use Data::Dumper::Concise;
-
 {
     no strict 'refs';
     $RUN = \&Nephia::Core::run;
 }
 
 sub import {
+    my $caller = caller;
+    unless ($caller eq 'Nephia') {
+        die __PACKAGE__. " : don't use directly" ;
+    }
     my $file = File::Spec->catfile($FindBin::Bin, 'root', pocketio_asset_path());
     my $furl = Furl->new(agent => __PACKAGE__.'/'.$VERSION);
     my $res = $furl->get($SOURCE_URL);
@@ -79,22 +81,54 @@ __END__
 
 =head1 NAME
 
-Nephia::Plugin::PocketIO - It's new $module
+Nephia::Plugin::PocketIO - Nephia plugin that provides DSL for using PocketIO
 
 =head1 SYNOPSIS
+
+Your app class ...
 
     package MyApp;
     use Nephia plugins => ['PocketIO'];
     
-    pocketio_assets;
+    path '/' => sub {
+        +{ template => 'index.html' },
+    };
+    
     pocketio 'message' => sub {
         my ($socket, $message) = @_;
-        $socket->emit('response', sub {'response data'} );
+        $socket->emit('response', sub {sprintf('you said "%s"', $message)} );
     };
 
-=head1 DESCRIPTION
+and, your template(view/index.html) ...
 
-Nephia::Plugin::PocketIO is ...
+    <html>
+    <head>
+    <title>MyApp</title>
+    </head>
+    <body>
+    <button onclick="send_to_server('boo');">boo!</button>
+    </body>
+    <script type="text/javascript">
+    // init connection
+    var socket = io.connect();
+
+    // add event listener
+    socket.on('response', function(server_message){
+        alert(server_message);
+    });
+    function send_to_server(string) {
+        socket.emit('message', string);
+    }
+    </script>
+    </html>
+
+=head1 DOWNLOAD ASSETS
+
+If you use this plugin, it try to download "socket.io.js" into $APPROOT/root/static/socket.io.js from https://raw.github.com/vti/pocketio/master/examples/chat/public/socket.io.js
+
+=head1 AUTO LOADING FEATURE
+
+When calls Nephia::View::*::render(), Nephia::Plugin::PocketIO injects javascript-tag(for loading socket.io.js) into result html.
 
 =head1 LICENSE
 
@@ -102,6 +136,12 @@ Copyright (C) ytnobody / satoshi azuma.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
+
+=head1 SEE ALSO
+
+PocketIO
+
+Nephia
 
 =head1 AUTHOR
 
