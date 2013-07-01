@@ -6,8 +6,11 @@ use PocketIO;
 use File::Spec;
 use Furl;
 use Plack::Builder;
+use Sub::Recursive;
+use HTML::Escape ();
+use Data::Dumper::Concise;
 
-our $VERSION = "0.01";
+our $VERSION = "0.02";
 our $SOURCE_URL = 'https://raw.github.com/vti/pocketio/master/examples/chat/public/socket.io.js';
 our $CLIENT_PATH = '/static/socket.io.js';
 our %EVENTS = ();
@@ -36,7 +39,26 @@ sub import {
 
 sub pocketio ($&) {
     my ($event, $code) = @_;
-    $EVENTS{$event} = $code;
+    $EVENTS{$event} = sub { 
+        my $socket = shift;
+        my $connection = pop;
+        my @vals = @_;
+        @vals = map { _escape_html_recursive($_) } @vals; ### suppress XSS risk
+        $code->($socket, @vals);
+    };
+}
+
+sub _escape_html_recursive {
+    my $v = shift;
+    return unless $v;
+warn Dumper($v);
+    my $work = recursive {
+        my $val = shift;
+        ref($val) eq 'ARRAY' ? [map {$REC->($_)} @$val] :
+        ref($val) eq 'HASH'  ? +{map {($_, $REC->($val->{$_}))} keys %$val} :
+        HTML::Escape::escape_html($val) ;
+    };
+    $work->($v);
 }
 
 sub pocketio_asset_path {
