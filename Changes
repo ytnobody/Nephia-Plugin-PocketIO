@@ -1,6 +1,8 @@
 Revision history for Perl extension Nephia-Plugin-PocketIO
 
 {{$NEXT}}
+
+0.02 2013-07-01T06:22:45Z
     - bug fix : suppress XSS risk
 
 0.01 2013-06-14T11:15:23Z
