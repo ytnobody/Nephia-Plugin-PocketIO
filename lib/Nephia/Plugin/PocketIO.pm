@@ -8,7 +8,6 @@ use Furl;
 use Plack::Builder;
 use Sub::Recursive;
 use HTML::Escape ();
-use Data::Dumper::Concise;
 
 our $VERSION = "0.02";
 our $SOURCE_URL = 'https://raw.github.com/vti/pocketio/master/examples/chat/public/socket.io.js';
