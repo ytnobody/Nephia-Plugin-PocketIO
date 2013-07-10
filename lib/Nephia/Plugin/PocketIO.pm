@@ -51,7 +51,6 @@ sub pocketio ($&) {
 sub _escape_html_recursive {
     my $v = shift;
     return unless $v;
-warn Dumper($v);
     my $work = recursive {
         my $val = shift;
         ref($val) eq 'ARRAY' ? [map {$REC->($_)} @$val] :
