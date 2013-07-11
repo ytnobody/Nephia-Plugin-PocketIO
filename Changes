@@ -2,6 +2,9 @@ Revision history for Perl extension Nephia-Plugin-PocketIO
 
 {{$NEXT}}
 
+0.03 2013-07-11T10:05:25Z
+    - refactor : compliant for Nephia-0.31
+
 0.02 2013-07-01T06:22:45Z
     - bug fix : suppress XSS risk
 

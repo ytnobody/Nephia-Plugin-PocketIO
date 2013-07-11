@@ -8,23 +8,16 @@ use Furl;
 use Plack::Builder;
 use Sub::Recursive;
 use HTML::Escape ();
+use Nephia::DSLModifier;
 
-our $VERSION = "0.02";
+our $VERSION = "0.03";
 our $SOURCE_URL = 'https://raw.github.com/vti/pocketio/master/examples/chat/public/socket.io.js';
 our $CLIENT_PATH = '/static/socket.io.js';
 our %EVENTS = ();
-our $RUN;
+our @EXPORT = qw/pocketio pocketio_asset_path/;
 
-{
-    no strict 'refs';
-    $RUN = \&Nephia::Core::run;
-}
-
-sub import {
-    my $caller = caller;
-    unless ($caller eq 'Nephia') {
-        die __PACKAGE__. " : don't use directly" ;
-    }
+sub load {
+    my ($class, $app, $opts) = @_;
     my $file = File::Spec->catfile($FindBin::Bin, 'root', pocketio_asset_path());
     my $furl = Furl->new(agent => __PACKAGE__.'/'.$VERSION);
     my $res = $furl->get($SOURCE_URL);
@@ -65,23 +58,13 @@ sub pocketio_asset_path {
     return File::Spec->catfile($path);
 }
 
-sub run {
-    my $app = $RUN->(@_);
-
-    my $asset = pocketio_asset_path();
-    my $view_class = ref($Nephia::Core::VIEW);
-    {
-        no strict 'refs';
-        no warnings 'redefine';
-        my $render_orig = *{$view_class.'::render'}{CODE};
-        *{$view_class.'::render'} = sub {
-            my $html = $render_orig->(@_);
-            $html =~ s|(</body>)|$1\n<script type="text/javascript" src="$asset"></script>|i;
-            $html;
-        };
-    }
-
+around run => sub {
+    my ($class, $config, $orig) = @_;
     return builder {
+        enable "SimpleContentFilter", filter => sub {
+            my $asset = pocketio_asset_path();
+            s|(</body>)|$1\n<script type="text/javascript" src="$asset"></script>|i;
+        };
         mount '/socket.io' => PocketIO->new(handler => sub {
             my $self = shift;
             for my $event (keys %EVENTS) {
@@ -90,9 +73,12 @@ sub run {
             }
             $self->send({buffer => []});
         });
-        mount '/' => $app;
+        mount '/' => $orig->($class, $config);
     };
-}
+};
+
+1;
+__END__
 
 1;
 __END__
