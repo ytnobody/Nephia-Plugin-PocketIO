@@ -1,13 +1,13 @@
 # NAME
 
-Nephia::Plugin::PocketIO - Nephia plugin that provides DSL for using PocketIO
+PrimalNephia::Plugin::PocketIO - PrimalNephia plugin that provides DSL for using PocketIO
 
 # SYNOPSIS
 
 Your app class ...
 
     package MyApp;
-    use Nephia plugins => ['PocketIO'];
+    use PrimalNephia plugins => ['PocketIO'];
     
 
     path '/' => sub {
@@ -49,7 +49,7 @@ If you use this plugin, it try to download "socket.io.js" into $APPROOT/root/sta
 
 # AUTO LOADING FEATURE
 
-When calls Nephia::View::\*::render(), Nephia::Plugin::PocketIO injects javascript-tag(for loading socket.io.js) into result html.
+When calls PrimalNephia::View::\*::render(), PrimalNephia::Plugin::PocketIO injects javascript-tag(for loading socket.io.js) into result html.
 
 # LICENSE
 
@@ -62,7 +62,7 @@ it under the same terms as Perl itself.
 
 PocketIO
 
-Nephia
+PrimalNephia
 
 # AUTHOR
 

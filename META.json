@@ -1,10 +1,10 @@
 {
-   "abstract" : "Nephia plugin that provides DSL for using PocketIO",
+   "abstract" : "PrimalNephia plugin that provides DSL for using PocketIO",
    "author" : [
       "ytnobody / satoshi azuma <ytnobody@gmail.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v0.5.5, CPAN::Meta::Converter version 2.130880",
+   "generated_by" : "Minilla/v0.6.3, CPAN::Meta::Converter version 2.130880",
    "license" : [
       "perl_5"
    ],
@@ -12,7 +12,7 @@
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
       "version" : "2"
    },
-   "name" : "Nephia-Plugin-PocketIO",
+   "name" : "PrimalNephia-Plugin-PocketIO",
    "no_index" : {
       "directory" : [
          "t",
@@ -43,9 +43,9 @@
       "runtime" : {
          "requires" : {
             "HTML::Escape" : "0",
-            "Nephia" : "0",
             "Plack::Handler::Twiggy" : "0",
             "PocketIO" : "0",
+            "PrimalNephia" : "0",
             "Sub::Recursive" : "0",
             "perl" : "5.008005"
          }
@@ -59,13 +59,13 @@
    "release_status" : "unstable",
    "resources" : {
       "bugtracker" : {
-         "web" : "https://github.com/ytnobody/Nephia-Plugin-PocketIO/issues"
+         "web" : "https://github.com/ytnobody/PrimalNephia-Plugin-PocketIO/issues"
       },
-      "homepage" : "https://github.com/ytnobody/Nephia-Plugin-PocketIO",
+      "homepage" : "https://github.com/ytnobody/PrimalNephia-Plugin-PocketIO",
       "repository" : {
          "type" : "git",
-         "url" : "git://github.com/ytnobody/Nephia-Plugin-PocketIO.git",
-         "web" : "https://github.com/ytnobody/Nephia-Plugin-PocketIO"
+         "url" : "git://github.com/ytnobody/PrimalNephia-Plugin-PocketIO.git",
+         "web" : "https://github.com/ytnobody/PrimalNephia-Plugin-PocketIO"
       }
    },
    "version" : "0.03"

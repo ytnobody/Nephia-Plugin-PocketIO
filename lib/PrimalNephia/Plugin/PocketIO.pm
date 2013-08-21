@@ -1,4 +1,4 @@
-package Nephia::Plugin::PocketIO;
+package PrimalNephia::Plugin::PocketIO;
 use 5.008005;
 use strict;
 use warnings;
@@ -8,7 +8,7 @@ use Furl;
 use Plack::Builder;
 use Sub::Recursive;
 use HTML::Escape ();
-use Nephia::DSLModifier;
+use PrimalNephia::DSLModifier;
 
 our $VERSION = "0.03";
 our $SOURCE_URL = 'https://raw.github.com/vti/pocketio/master/examples/chat/public/socket.io.js';
@@ -54,7 +54,7 @@ sub _escape_html_recursive {
 
 sub pocketio_asset_path {
     my $path = shift;
-    $path ||= $Nephia::Plugin::PocketIO::CLIENT_PATH;
+    $path ||= $PrimalNephia::Plugin::PocketIO::CLIENT_PATH;
     return File::Spec->catfile($path);
 }
 
@@ -87,14 +87,14 @@ __END__
 
 =head1 NAME
 
-Nephia::Plugin::PocketIO - Nephia plugin that provides DSL for using PocketIO
+PrimalNephia::Plugin::PocketIO - PrimalNephia plugin that provides DSL for using PocketIO
 
 =head1 SYNOPSIS
 
 Your app class ...
 
     package MyApp;
-    use Nephia plugins => ['PocketIO'];
+    use PrimalNephia plugins => ['PocketIO'];
     
     path '/' => sub {
         +{ template => 'index.html' },
@@ -134,7 +134,7 @@ If you use this plugin, it try to download "socket.io.js" into $APPROOT/root/sta
 
 =head1 AUTO LOADING FEATURE
 
-When calls Nephia::View::*::render(), Nephia::Plugin::PocketIO injects javascript-tag(for loading socket.io.js) into result html.
+When calls PrimalNephia::View::*::render(), PrimalNephia::Plugin::PocketIO injects javascript-tag(for loading socket.io.js) into result html.
 
 =head1 LICENSE
 
@@ -147,7 +147,7 @@ it under the same terms as Perl itself.
 
 PocketIO
 
-Nephia
+PrimalNephia
 
 =head1 AUTHOR
 

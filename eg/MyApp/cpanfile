@@ -1,4 +1,4 @@
-requires 'Nephia' => '0';
+requires 'PrimalNephia' => '0';
 
 on build => sub {
     requires 'Test::More';

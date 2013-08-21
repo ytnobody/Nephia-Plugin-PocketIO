@@ -1,5 +1,5 @@
 requires 'perl', '5.008001';
-requires 'Nephia', '0';
+requires 'PrimalNephia', '0';
 requires 'PocketIO', '0';
 requires 'Plack::Handler::Twiggy', '0';
 requires 'Sub::Recursive';
